@@ -1,3 +1,2 @@
-username: username 
-password: password
-mailing_list_id: 123456
+api_key: abcdef0123456789abcdef0123456789
+mailing_list_id: abcdef0123

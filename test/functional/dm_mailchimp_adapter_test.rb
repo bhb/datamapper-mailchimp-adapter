@@ -1,13 +1,12 @@
 require File.dirname(__FILE__) + '/../test_helper'
 
 DataMapper.setup(:default, {
-  :adapter => 'mailchimp',
-  :username => CONFIG[:username],
-  :password => CONFIG[:password],
-  :mailing_list_id => CONFIG[:mailing_list_id]
-})
+                   :adapter => 'mailchimp',
+                   :api_key => CONFIG['api_key'],
+                   :mailing_list_id => CONFIG['mailing_list_id']
+                 })
 
-class MailchimpAdapterTest < Test::Unit:TestCase
+class MailchimpAdapterTest < Test::Unit::TestCase
   
   test "should retrieve no members from an empty list" do
     members = Subscriber.all
