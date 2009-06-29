@@ -68,7 +68,7 @@ module DataMapper
         updated += 1
       end
       
-      def delete(query) 
+      def delete(query)
         deleted = 0
         chimp_remove(extract_query_options(query))
         deleted += 1
@@ -76,7 +76,10 @@ module DataMapper
       
       
       private
-      def chimp_subscribe(resource, email_content_type="html", double_optin=true)
+
+      # TODO change these defaults back
+      #def chimp_subscribe(resource, email_content_type="html", double_optin=true)
+      def chimp_subscribe(resource, email_content_type="html", double_optin=false)
         begin
           @client.call("listSubscribe", @api_key, get_mailing_list_from_resource(resource), resource.email, resource.build_mail_merge(), email_content_type, double_optin)
         rescue XMLRPC::FaultException => e
@@ -92,9 +95,11 @@ module DataMapper
         end    
       end
       
-      def chimp_remove(options, delete_user=false, send_goodbye=true, send_notify=true)
+      # TODO - put this back to defaults, but let users change settings
+      #def chimp_remove(options, delete_user=false, send_goodbye=true, send_notify=true)
+      def chimp_remove(options, delete_user=true, send_goodbye=false, send_notify=false)
         begin
-          raise MailChimpAPI::DeleteError("Email and Mailing List Id can't be nil") if (options[:email].nil? || options[:mailing_list_id].nil?)
+          raise MailChimpAPI::DeleteError, "Email and Mailing List Id can't be nil" if (options[:email].nil? || options[:mailing_list_id].nil?)
           @client.call("listUnsubscribe", @api_key, options[:mailing_list_id], options[:email], delete_user, send_goodbye, send_notify) 
         rescue XMLRPC::FaultException => e
           raise MailChimpAPI::DeleteError, e.faultString

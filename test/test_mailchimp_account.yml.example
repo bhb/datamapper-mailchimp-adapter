@@ -1,2 +1,9 @@
+# WARNING !!!!!!
+# DO NOT set the list ID to be a mailing list
+# with contents you care about. The tests will
+# delete the contents of the list. 
+#
+#  In fact, it's safe to create an entirely different 
+#  account just for testing.
 api_key: abcdef0123456789abcdef0123456789
 mailing_list_id: abcdef0123

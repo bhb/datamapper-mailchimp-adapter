@@ -10,12 +10,17 @@ CONFIG =  YAML::load_file(File.dirname(__FILE__)+'/test_mailchimp_account.yml')
 class Subscriber
   include DataMapper::Resource
   
-  property :id, String, :serial => true, :key => true, :field => :_id
+  property :id, String, :serial => true, :field => :_id
   property :first_name, String
   property :last_name, String
-  property :email, String
+  property :email, String, :key => true
   property :mailing_list_id, String
   
+  #callback method used by adapter to build mail merge info for MailChimp
+  def build_mail_merge()
+    {"EMAIL" => self.email, "FNAME" => self.first_name, "LNAME" => self.last_name }
+  end
+
 end
 
 class Test::Unit::TestCase
@@ -37,6 +42,15 @@ class Test::Unit::TestCase
   def self.pending_test(name, &block)
     test(name) do
       puts "\nPENDING: #{name} (in #{eval('"#{__FILE__}:#{__LINE__}"', block.binding)})"
+    end
+  end
+
+  def assert_has_contents(expected,actual)
+    if expected.length != actual.length
+      raise Test::Unit::AssertionFailedError, "#{expected.length} items expected, but found #{actual.length} items"
+    end
+    if !expected.all? {|x| actual.member?(x)}
+      raise Test::Unit::AssertionFailedError, "#{expected.inspect} expected but was #{actual.inspect}"
     end
   end
   
