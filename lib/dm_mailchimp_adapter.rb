@@ -35,25 +35,10 @@ module DataMapper
         end
         created
       end
-      
+
       def read_many(query)
         Collection.new(query) do |set|
-          results = chimp_all_members(extract_query_options(query))
-          results = results.map {|result| chimp_read_member(extract_query_options(query).merge(:email => result['email'])) }
-          if results
-            results.each do |result|
-              data = query.fields.map do |property|
-                # TODO - duplication with read_one
-                if(result.key?(property.field.to_s))
-                  property.typecast(result[property.field.to_s])
-                else
-                  mapping = query.model.mail_merge
-                  property.typecast(result["merges"][mapping[property.field.to_s]])
-                end
-              end
-              set.load(data)  
-            end  
-          end 
+          read(query, set, true)
         end
       end
       

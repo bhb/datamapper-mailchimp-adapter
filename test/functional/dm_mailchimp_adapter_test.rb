@@ -30,14 +30,6 @@ class MailchimpAdapterTest < Test::Unit::TestCase
                       :last_name => options.fetch(:last_name) {'Smith'})
   end
 
-  test "should retrieve all subscribers from a list" do
-    mailchimp_test_construct do
-      john = create_subscriber(:email => 'john@doe.com')
-      jane = create_subscriber(:email => 'jane@doe.com')
-      assert_has_contents [jane,john], Subscriber.all
-    end
-  end
-
   test "should be able to add subscriber to list" do
     mailchimp_test_construct do
       subscriber = create_subscriber
@@ -59,6 +51,14 @@ class MailchimpAdapterTest < Test::Unit::TestCase
       mailchimp_test_construct do
         subscribers = Subscriber.all
         assert_equal [], subscribers
+      end
+    end
+
+    test "should retrieve all subscribers from a list" do
+      mailchimp_test_construct do
+        john = create_subscriber(:email => 'john@doe.com')
+        jane = create_subscriber(:email => 'jane@doe.com')
+        assert_has_contents [jane,john], Subscriber.all
       end
     end
 
