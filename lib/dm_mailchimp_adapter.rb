@@ -43,7 +43,13 @@ module DataMapper
       end
       
       def read_one(query)
-        read(query, query.model, false)
+        result = read(query, query.model, false)
+        # TODO - this is hacky
+        if(result.is_a?(Array))
+          result.first
+        else
+          result
+        end
       end
     
       def update(attributes, query)

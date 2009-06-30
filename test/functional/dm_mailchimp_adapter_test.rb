@@ -30,11 +30,47 @@ class MailchimpAdapterTest < Test::Unit::TestCase
                       :last_name => options.fetch(:last_name) {'Smith'})
   end
 
-  test "should be able to add subscriber to list" do
-    mailchimp_test_construct do
-      subscriber = create_subscriber
-      assert_equal [subscriber], Subscriber.all
+  testing "creating a subscriber" do
+    
+    test "new/save should create a subscriber" do
+      pending
+      #mailchimp_test_construct do
+      #  subscriber = Subscriber.new(:email => 'test@test.com')
+      #  assert_equal [], Subscriber.all
+      #  subscriber.save
+      #  assert_equal [subscriber], Subscriber.all
+      #end
     end
+    
+    test "#create should create a subscriber" do
+      mailchimp_test_construct do
+        subscriber = create_subscriber
+        assert_equal [subscriber], Subscriber.all
+      end
+    end
+
+    test "email should be set" do
+      mailchimp_test_construct do
+        subscriber = create_subscriber(:email => 'test@test.com')
+        assert_equal 'test@test.com', subscriber.email
+      end
+    end
+    
+    test "last name (a merge tag) should be set" do
+      mailchimp_test_construct do
+        subscriber = create_subscriber(:last_name => 'Jones')
+        assert_equal 'Jones', subscriber.last_name
+      end
+    end
+
+    test "should raise exception if subscriber already exists" do
+      create_subscriber(:email => 'jon@smith.com')
+      error = assert_raises MailChimpAPI::CreateError do
+        create_subscriber(:email => 'jon@smith.com')
+      end
+      assert_equal 'jon@smith.com is already subscribed to list Test', error.message
+    end
+    
   end
   
   test "should be able to delete a subscriber" do
@@ -74,6 +110,30 @@ class MailchimpAdapterTest < Test::Unit::TestCase
         assert_equal 'Smith', tom.last_name
       end
     end
+
+    test "should return all subscribers that matches email" do
+      pending
+      # mailchimp_test_construct do
+#         john = create_subscriber(:email => 'john@smith.com')
+#         jane = create_subscriber(:email => 'jane@smith.com')
+#         subscribers = Subscriber.all(:email => 'john@smith.com')
+#         assert_equal 1, subscribers.length
+#       end
+    end
+
+    test "should return all subscribers that matches merge tag (e.g. first name)" do
+      pending
+      #mailchimp_test_construct do
+      #  sam = create_subscriber(:first_name => 'Sam',
+      #                          :email => 'sam@smith.com')
+      #  tom = create_subscriber(:first_name => 'Tom',
+      #                          :email => 'samuel@jones.com')
+      #  samuel = create_subscriber(:first_name => 'Sam',
+      #                             :email => 'tom@jones.com')
+      #  subscribers = Subscriber.all(:first_name => 'Sam')
+      #  assert_equal 2, subscribers.length
+      #end
+    end
     
   end
 
@@ -82,32 +142,34 @@ class MailchimpAdapterTest < Test::Unit::TestCase
     test "should return nil if there are no subscribers" do
       mailchimp_test_construct do
         subscriber = Subscriber.first
-        assert_equal [], subscriber
+        assert_nil subscriber
       end
     end
 
     test "should return first subscriber with no query" do
       mailchimp_test_construct do
-        create_subscriber
-        subscriber = Subscriber.first
-        assert_not_nil subscriber
+        subscriber = create_subscriber
+        assert_equal subscriber, Subscriber.first
       end
     end
 
     test "should return first subscriber that matches email" do
       mailchimp_test_construct do
+        jane = create_subscriber(:email => 'jane@smith.com')
         john = create_subscriber(:email => 'john@smith.com')
         subscriber = Subscriber.first(:email => 'john@smith.com')
-        assert_not_nil john, subscriber
+        assert_equal john, subscriber
       end
     end
 
     test "should return first subscriber that matches merge tag (e.g. first name)" do
-      mailchimp_test_construct do
-        sam = create_subscriber(:first_name => 'Sam')
-        subscriber = Subscriber.first(:first_name => 'Sam')
-        assert_not_nil sam, subscriber
-      end
+      pending
+      #mailchimp_test_construct do
+      #  tom = create_subscriber(:first_name => 'Tom', :email => 'tom@tom.com')
+      #  sam = create_subscriber(:first_name => 'Sam', :email => 'sam@sam.com')
+      #  subscriber = Subscriber.first(:first_name => 'Sam')
+      #  assert_equal sam, subscriber
+      #end
     end
 
     test "should map merge fields to object fields" do
