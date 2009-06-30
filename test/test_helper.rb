@@ -17,8 +17,13 @@ class Subscriber
   property :mailing_list_id, String
   
   #callback method used by adapter to build mail merge info for MailChimp
-  def build_mail_merge()
+  def build_mail_merge
     {"EMAIL" => self.email, "FNAME" => self.first_name, "LNAME" => self.last_name }
+  end
+
+  #TODO generate this automatically
+  def self.mail_merge
+    {"EMAIL" => self.email.name.to_s, "FNAME" => self.first_name.name.to_s, "LNAME" => self.last_name.name.to_s }.invert
   end
 
 end

@@ -45,6 +45,30 @@ class MailchimpAdapterTest < Test::Unit::TestCase
     end
   end
 
+  test "should map merge fields to object fields (using first)" do
+    mailchimp_test_construct do
+      create_subscriber(:email => 'tom@smith.com',
+                              :first_name => 'Tom',
+                              :last_name => 'Smith')
+      tom = Subscriber.first(:email => 'tom@smith.com')
+      assert_equal 'Tom', tom.first_name
+      assert_equal 'Smith', tom.last_name
+    end
+  end
+
+  test "should map merge fields to object fields (using all)" do
+    mailchimp_test_construct do
+      create_subscriber(:email => 'tom@smith.com',
+                              :first_name => 'Tom',
+                              :last_name => 'Smith')
+      subscribers = Subscriber.all
+      subscribers.inspect # this forces entire collection to load
+      tom = subscribers.first
+      assert_equal 'Tom', tom.first_name
+      assert_equal 'Smith', tom.last_name
+    end
+  end
+
   test "should be able to add subscriber to list" do
     mailchimp_test_construct do
       subscriber = create_subscriber
@@ -58,6 +82,18 @@ class MailchimpAdapterTest < Test::Unit::TestCase
       subscriber.destroy
       assert_equal [], Subscriber.all
     end
+  end
+
+  test "should be able to get first subscriber" do
+    pending
+  end
+
+  test "should be able to lazily load all, then load first" do
+    pending
+    #mailchimp_test_construct do
+    #  subscriber = create_subscriber
+    #  assert_equal subscriber, Subscriber.all.first
+    #end
   end
   
 end

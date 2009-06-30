@@ -35,16 +35,23 @@ module DataMapper
         end
         created
       end
-
+      
       def read_many(query)
         Collection.new(query) do |set|
           results = chimp_all_members(extract_query_options(query))
+          results = results.map {|result| chimp_read_member(extract_query_options(query).merge(:email => result['email'])) }
           if results
             results.each do |result|
-            data = query.fields.map do |property|        
-              property.typecast(result[property.field.to_s])
-            end
-            set.load(data)  
+              data = query.fields.map do |property|
+                # TODO - duplication with read_one
+                if(result.key?(property.field.to_s))
+                  property.typecast(result[property.field.to_s])
+                else
+                  mapping = query.model.mail_merge
+                  property.typecast(result["merges"][mapping[property.field.to_s]])
+                end
+              end
+              set.load(data)  
             end  
           end 
         end
@@ -54,11 +61,16 @@ module DataMapper
         result = chimp_read_member(extract_query_options(query))
         if result
           query.model.load(
-            query.fields.map do |property|        
-              property.typecast(result[property.field.to_s])
-            end,
-            query
-          )
+                           query.fields.map do |property|
+                             if(result.key?(property.field.to_s))
+                               property.typecast(result[property.field.to_s])
+                             else
+                               mapping = query.model.mail_merge
+                               property.typecast(result["merges"][mapping[property.field.to_s]])
+                             end
+                           end,
+                           query
+                           )
         end
       end
     
@@ -73,7 +85,6 @@ module DataMapper
         chimp_remove(extract_query_options(query))
         deleted += 1
       end
-      
       
       private
 
@@ -114,9 +125,10 @@ module DataMapper
         end   
       end
       
+      # TODO - is there any reason this isn't the same as chimp_all_members?
       def chimp_read_member(options)
         begin
-          raise MailChimpAPI::ReadError("Email can't be nil") if (options[:email].nil?) 
+          raise MailChimpAPI::ReadError, "Email can't be nil" if (options[:email].nil?) 
           @client.call("listMemberInfo", @api_key, options[:mailing_list_id], options[:email])  
         rescue XMLRPC::FaultException => e
           raise MailChimpAPI::ReadError, e.faultString
