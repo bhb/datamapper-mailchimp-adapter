@@ -58,20 +58,7 @@ module DataMapper
       end
       
       def read_one(query)
-        result = chimp_read_member(extract_query_options(query))
-        if result
-          query.model.load(
-                           query.fields.map do |property|
-                             if(result.key?(property.field.to_s))
-                               property.typecast(result[property.field.to_s])
-                             else
-                               mapping = query.model.mail_merge
-                               property.typecast(result["merges"][mapping[property.field.to_s]])
-                             end
-                           end,
-                           query
-                           )
-        end
+        read(query, query.model, false)
       end
     
       def update(attributes, query)
@@ -87,6 +74,29 @@ module DataMapper
       end
       
       private
+      
+      def result_values(result, properties, model)
+        properties.map do |property|
+          field_name = property.field.to_s
+          if(result.key?(field_name))
+            property.typecast(result[field_name])
+          else
+            mapping = model.mail_merge
+            property.typecast(result["merges"][mapping[field_name]])
+          end
+        end
+      end
+
+      def read(query, set, arr = true)
+        results = chimp_all_members(extract_query_options(query))
+        results = results.map {|result| chimp_read_member(extract_query_options(query).merge(:email => result['email'])) }
+        properties = query.fields
+        results.each do |result|
+          values = result_values(result, properties, query.model)
+          # This is the core logic that handles the difference between all/first
+          arr ? set.load(values) : (break set.load(values, query))
+        end
+      end
 
       # TODO change these defaults back
       #def chimp_subscribe(resource, email_content_type="html", double_optin=true)

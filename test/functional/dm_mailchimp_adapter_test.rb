@@ -30,42 +30,11 @@ class MailchimpAdapterTest < Test::Unit::TestCase
                       :last_name => options.fetch(:last_name) {'Smith'})
   end
 
-  test "should retrieve no members from an empty list" do
-    mailchimp_test_construct do
-      members = Subscriber.all
-      assert_equal [], members
-    end
-  end
-
-  test "should retrieve all members from a list" do
+  test "should retrieve all subscribers from a list" do
     mailchimp_test_construct do
       john = create_subscriber(:email => 'john@doe.com')
       jane = create_subscriber(:email => 'jane@doe.com')
       assert_has_contents [jane,john], Subscriber.all
-    end
-  end
-
-  test "should map merge fields to object fields (using first)" do
-    mailchimp_test_construct do
-      create_subscriber(:email => 'tom@smith.com',
-                              :first_name => 'Tom',
-                              :last_name => 'Smith')
-      tom = Subscriber.first(:email => 'tom@smith.com')
-      assert_equal 'Tom', tom.first_name
-      assert_equal 'Smith', tom.last_name
-    end
-  end
-
-  test "should map merge fields to object fields (using all)" do
-    mailchimp_test_construct do
-      create_subscriber(:email => 'tom@smith.com',
-                              :first_name => 'Tom',
-                              :last_name => 'Smith')
-      subscribers = Subscriber.all
-      subscribers.inspect # this forces entire collection to load
-      tom = subscribers.first
-      assert_equal 'Tom', tom.first_name
-      assert_equal 'Smith', tom.last_name
     end
   end
 
@@ -84,16 +53,82 @@ class MailchimpAdapterTest < Test::Unit::TestCase
     end
   end
 
-  test "should be able to get first subscriber" do
-    pending
+  testing "reading subscribers (using .all)" do
+    
+    test "should retrieve no subscribers from an empty list" do
+      mailchimp_test_construct do
+        subscribers = Subscriber.all
+        assert_equal [], subscribers
+      end
+    end
+
+    test "should map merge fields to object fields" do
+      mailchimp_test_construct do
+        create_subscriber(:email => 'tom@smith.com',
+                          :first_name => 'Tom',
+                          :last_name => 'Smith')
+        subscribers = Subscriber.all
+        subscribers.inspect # this forces entire collection to load
+        tom = subscribers.first
+        assert_equal 'Tom', tom.first_name
+        assert_equal 'Smith', tom.last_name
+      end
+    end
+    
   end
 
-  test "should be able to lazily load all, then load first" do
-    pending
-    #mailchimp_test_construct do
-    #  subscriber = create_subscriber
-    #  assert_equal subscriber, Subscriber.all.first
-    #end
+  testing "reading subscribers (using .first)" do
+    
+    test "should return nil if there are no subscribers" do
+      mailchimp_test_construct do
+        subscriber = Subscriber.first
+        assert_equal [], subscriber
+      end
+    end
+
+    test "should return first subscriber with no query" do
+      mailchimp_test_construct do
+        create_subscriber
+        subscriber = Subscriber.first
+        assert_not_nil subscriber
+      end
+    end
+
+    test "should return first subscriber that matches email" do
+      mailchimp_test_construct do
+        john = create_subscriber(:email => 'john@smith.com')
+        subscriber = Subscriber.first(:email => 'john@smith.com')
+        assert_not_nil john, subscriber
+      end
+    end
+
+    test "should return first subscriber that matches merge tag (e.g. first name)" do
+      mailchimp_test_construct do
+        sam = create_subscriber(:first_name => 'Sam')
+        subscriber = Subscriber.first(:first_name => 'Sam')
+        assert_not_nil sam, subscriber
+      end
+    end
+
+    test "should map merge fields to object fields" do
+      mailchimp_test_construct do
+        create_subscriber(:email => 'tom@smith.com',
+                          :first_name => 'Tom',
+                          :last_name => 'Smith')
+        tom = Subscriber.first(:email => 'tom@smith.com')
+        assert_equal 'Tom', tom.first_name
+        assert_equal 'Smith', tom.last_name
+      end
+    end
+
+    test "should be able to lazily load all, then load first" do
+      mailchimp_test_construct do
+        subscriber = create_subscriber
+        assert_equal subscriber, Subscriber.all.first
+      end
+    end
+    
   end
+
   
 end
