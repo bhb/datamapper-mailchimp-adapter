@@ -1,4 +1,5 @@
 require File.dirname(__FILE__) + '/../test_helper'
+require File.dirname(__FILE__) + '/../mailchimp_helper'
 
 DataMapper.setup(:default, {
                    :adapter => 'mailchimp',
@@ -8,19 +9,23 @@ DataMapper.setup(:default, {
 
 class MailchimpAdapterTest < Test::Unit::TestCase
 
-  def delete_all_subscribers
-    Subscriber.all.each do |subscriber|
-      subscriber.destroy
-    end
+  def delete_all_subscribers(mc_helper)
+    #emails = Subscriber.all.map {|subscriber| subscriber.email}
+    emails = mc_helper.list_members.map {|subscriber| subscriber['email']}
+    #Subscriber.all.each do |subscriber|
+      #subscriber.destroy
+    #end
+    mc_helper.list_batch_unsubscribe(emails)
   end
   
   def mailchimp_test_construct
     # makes sure test list is empty after tests
-    delete_all_subscribers
+    mc_helper = MailChimpHelper.new(CONFIG['api_key'], CONFIG['mailing_list_id'])
+    delete_all_subscribers(mc_helper)
     begin
       yield if block_given?
     ensure
-      delete_all_subscribers
+      delete_all_subscribers(mc_helper)
     end
   end
 
