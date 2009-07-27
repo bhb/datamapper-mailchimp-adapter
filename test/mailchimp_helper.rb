@@ -14,6 +14,7 @@ class MailChimpHelper
     @mailing_list_id = mailing_list_id
   end
 
+  # listMemberInfo(string apikey, string id, string email_address)
   def list_member_info(email_address)
     self.class.get(VERSION,
                    :query => 
@@ -39,6 +40,19 @@ class MailChimpHelper
                                            :since => since,
                                            :start => start,
                                            :limit => limit}))
+  end
+  
+  # listSubscribe(string apikey, string id, string email_address, array merge_vars, string email_type, boolean double_optin, boolean update_existing, boolean replace_interests, boolean send_welcome)
+  def list_subscribe(email_address, merge_vars, email_type="html", double_optin=false, update_existing=false, replace_interests=true, send_welcome = true)
+    self.class.post(VERSION,
+                    :query => build_query('listSubscribe',
+                                          {:email_address => email_address,
+                                            :merge_vars => merge_vars,
+                                            :email_type => email_type,
+                                            :double_optin => double_optin,
+                                            :update_existing => update_existing,
+                                            :replace_interests => replace_interests,
+                                            :send_welcome => send_welcome}))
   end
 
   private 

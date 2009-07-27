@@ -10,11 +10,7 @@ DataMapper.setup(:default, {
 class MailchimpAdapterTest < Test::Unit::TestCase
 
   def delete_all_subscribers(mc_helper)
-    #emails = Subscriber.all.map {|subscriber| subscriber.email}
     emails = mc_helper.list_members.map {|subscriber| subscriber['email']}
-    #Subscriber.all.each do |subscriber|
-      #subscriber.destroy
-    #end
     mc_helper.list_batch_unsubscribe(emails)
   end
   
@@ -28,7 +24,7 @@ class MailchimpAdapterTest < Test::Unit::TestCase
       delete_all_subscribers(mc_helper)
     end
   end
-
+  
   def create_subscriber(options={})
     Subscriber.create(:email => options.fetch(:email) {'john@smith.com'},
                       :first_name => options.fetch(:first_name) {'John'},
