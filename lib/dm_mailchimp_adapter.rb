@@ -138,7 +138,7 @@ module DataMapper
       
       def chimp_all_members(options)
         begin
-          @client.call("listMembers", @api_key, options[:mailing_list_id], options[:status])
+          @client.call("listMembers", @api_key, options[:mailing_list_id], options[:status], "", 0, 15000)
         rescue XMLRPC::FaultException => e
           raise MailChimpAPI::ReadError, e.faultString
         end    

@@ -192,6 +192,5 @@ class MailchimpAdapterTest < Test::Unit::TestCase
     end
     
   end
-
   
 end
