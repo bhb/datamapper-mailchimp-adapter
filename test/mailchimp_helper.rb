@@ -55,6 +55,16 @@ class MailChimpHelper
                                             :send_welcome => send_welcome}))
   end
 
+  # listBatchSubscribe(string apikey, string id, array batch, boolean double_optin, boolean update_existing, boolean replace_interests)
+  def list_batch_subscribe(batch, double_optin=false, update_existing=false, replace_interests=true)
+    self.class.post(VERSION,
+                    :query => build_query('listBatchSubscribe',
+                                          {:batch => batch,
+                                            :double_optin => double_optin,
+                                            :update_existing => update_existing,
+                                            :replace_interests => replace_interests}))
+  end
+
   private 
  
   def build_query(method,params)

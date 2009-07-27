@@ -25,6 +25,17 @@ class MailchimpAdapterTest < Test::Unit::TestCase
     end
   end
   
+  def batch_add_subscribers(batch)
+    mc_helper = MailChimpHelper.new(CONFIG['api_key'], CONFIG['mailing_list_id'])
+    formatted_batch = []
+    batch.each do |subscriber|
+      formatted_batch << {
+        'EMAIL' => subscriber[:email],
+      }
+    end
+    mc_helper.list_batch_subscribe(formatted_batch)
+  end
+  
   def create_subscriber(options={})
     Subscriber.create(:email => options.fetch(:email) {'john@smith.com'},
                       :first_name => options.fetch(:first_name) {'John'},
@@ -96,6 +107,17 @@ class MailchimpAdapterTest < Test::Unit::TestCase
         john = create_subscriber(:email => 'john@doe.com')
         jane = create_subscriber(:email => 'jane@doe.com')
         assert_has_contents [jane,john], Subscriber.all
+      end
+    end
+
+    test "should be able to retrieve more that 100 subscribers" do
+      mailchimp_test_construct do
+        batch = []
+        101.times do |x|
+          batch << { :email => "email#{x}@domain#{x}.com", :first_name => "first_#{x}", :last_name => "last_#{x}"}
+        end
+        batch_add_subscribers(batch)
+        assert_equal 101, Subscriber.all.length
       end
     end
 
