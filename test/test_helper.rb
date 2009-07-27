@@ -2,6 +2,7 @@ require 'test/unit'
 require 'pending'
 require 'yaml'
 require 'ruby-debug'
+require 'mocha'
 
 require File.expand_path(File.join(File.dirname(__FILE__), %w[.. lib dm_mailchimp_adapter]))
 
