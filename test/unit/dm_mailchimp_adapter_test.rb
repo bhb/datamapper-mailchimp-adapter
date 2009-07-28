@@ -43,8 +43,17 @@ class MailchimpAdapterTest < Test::Unit::TestCase
 
   testing "#read_many" do
 
-    #  
-    #
+    test "should call listMemberInfo for each member" do
+      bob = {'email' => 'bob@test.com', 'merges' => {}}
+      stan = {'email' => 'stan@test.com', 'merges' => {}}
+      XMLRPC::Client.any_instance.stubs(:call).with('listMembers', anything, anything, anything, anything, anything, anything).returns([bob,stan])
+      XMLRPC::Client.any_instance.expects(:call).with('listMemberInfo', anything, anything, 'bob@test.com').returns(bob)
+      XMLRPC::Client.any_instance.expects(:call).with('listMemberInfo', anything, anything, 'stan@test.com').returns(stan)
+      #query = stub_everything(:conditions => [])
+      query = DataMapper::Query.new(repository(:default),Subscriber)
+      create_adapter.read_many(query).inspect
+      #Subscriber.all
+    end
     
   end
 
@@ -64,8 +73,7 @@ class MailchimpAdapterTest < Test::Unit::TestCase
 #       assert_equal subscriber, Subscriber.first
 #     end
 
-    test "should call listMemberInfo for each member" do
-    end
+  
 
     test "should handle getting an Array from #read" do
       subscriber = stub_everything
