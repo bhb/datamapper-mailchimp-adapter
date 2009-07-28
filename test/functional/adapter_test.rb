@@ -61,6 +61,19 @@ class MailchimpAdapterTest < Test::Unit::TestCase
       end
     end
 
+    # impossible to do from this level right now
+    # make a unit-level test and make a note
+    # test "can create multiple subscribers" do
+#       mailchimp_test_construct do
+#         #bob = {:email => 'bob@test.com'}
+#         #stan = {:email => 'stan@test.com'}
+#         debugger
+#         bob = create_subscriber(:email => 'bob@test.com')
+#         stan = create_subscriber(:email => 'stanb@test.com')
+#         assert_has_contents [bob,stan], Subscriber.all
+#       end
+#     end
+
     test "email should be set" do
       mailchimp_test_construct do
         subscriber = create_subscriber(:email => 'test@test.com')
@@ -110,16 +123,16 @@ class MailchimpAdapterTest < Test::Unit::TestCase
       end
     end
 
-#     test "should be able to retrieve more that 100 subscribers" do
-#       mailchimp_test_construct do
-#         batch = []
-#         101.times do |x|
-#           batch << { :email => "email#{x}@domain#{x}.com", :first_name => "first_#{x}", :last_name => "last_#{x}"}
-#         end
-#         batch_add_subscribers(batch)
-#         assert_equal 101, Subscriber.all.length
-#       end
-#     end
+    #     test "should be able to retrieve more that 100 subscribers" do
+    #       mailchimp_test_construct do
+    #         batch = []
+    #         101.times do |x|
+    #           batch << { :email => "email#{x}@domain#{x}.com", :first_name => "first_#{x}", :last_name => "last_#{x}"}
+    #         end
+    #         batch_add_subscribers(batch)
+    #         assert_equal 101, Subscriber.all.length
+    #       end
+    #     end
 
     test "should map merge fields to object fields" do
       mailchimp_test_construct do
@@ -137,11 +150,11 @@ class MailchimpAdapterTest < Test::Unit::TestCase
     test "should return all subscribers that matches email" do
       pending
       # mailchimp_test_construct do
-#         john = create_subscriber(:email => 'john@smith.com')
-#         jane = create_subscriber(:email => 'jane@smith.com')
-#         subscribers = Subscriber.all(:email => 'john@smith.com')
-#         assert_equal 1, subscribers.length
-#       end
+      #         john = create_subscriber(:email => 'john@smith.com')
+      #         jane = create_subscriber(:email => 'jane@smith.com')
+      #         subscribers = Subscriber.all(:email => 'john@smith.com')
+      #         assert_equal 1, subscribers.length
+      #       end
     end
 
     test "should return all subscribers that matches merge tag (e.g. first name)" do
