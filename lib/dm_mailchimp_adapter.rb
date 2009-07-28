@@ -13,19 +13,14 @@ end
 module DataMapper
   module Adapters
     class MailchimpAdapter < AbstractAdapter
-      CHIMP_URL = "http://api.mailchimp.com/1.2/" 
-
-      include XmlRpcConnector
 
       attr_reader :client, :authorization, :mailing_list_id
 
-
       def initialize(name, uri_or_options)
         super(name, uri_or_options)
-        # @client = XMLRPC::Client.new2(CHIMP_URL)  
         @mailing_list_id = uri_or_options[:mailing_list_id]
         @api_key = uri_or_options[:api_key]
-        protocol_initializer 
+        @mailchimp_api = XmlRpcConnector.new(@api_key,@mailing_list_id)
       end
 
       def create(resources)
@@ -36,9 +31,9 @@ module DataMapper
             batch << resource.build_mail_merge
             created += 1
           end
-          chimp_batch_subscribe(batch)
+          @mailchimp_api.chimp_batch_subscribe(batch)
         else
-           chimp_subscribe(resources.first)
+          @mailchimp_api.chimp_subscribe(resources.first)
            created += 1
         end
         created
@@ -62,13 +57,13 @@ module DataMapper
     
       def update(attributes, query)
         updated = 0
-        chimp_update(extract_query_options(query), extract_update_options(attributes))
+        @mailchimp_ami.chimp_update(extract_query_options(query), extract_update_options(attributes))
         updated += 1
       end
       
       def delete(query)
         deleted = 0
-        chimp_remove(extract_query_options(query))
+        @mailchimp_api.chimp_remove(extract_query_options(query))
         deleted += 1
       end
       
@@ -87,8 +82,8 @@ module DataMapper
       end
 
       def read(query, set, arr = true)
-        results = chimp_all_members(extract_query_options(query))
-        results = results.map {|result| chimp_read_member(extract_query_options(query).merge(:email => result['email'])) }
+        results = @mailchimp_api.chimp_all_members(extract_query_options(query))
+        results = results.map {|result| @mailchimp_api.chimp_read_member(extract_query_options(query).merge(:email => result['email'])) }
         properties = query.fields
         results.each do |result|
           values = result_values(result, properties, query.model)
@@ -97,59 +92,6 @@ module DataMapper
         end
       end
 
-      # TODO - put this back to defaults, but let users change settings
-      #def chimp_remove(options, delete_user=false, send_goodbye=true, send_notify=true)
-      def chimp_remove(options, delete_user=true, send_goodbye=false, send_notify=false)
-        begin
-          raise MailChimpAPI::DeleteError, "Email and Mailing List Id can't be nil" if (options[:email].nil? || options[:mailing_list_id].nil?)
-          @client.call("listUnsubscribe", @api_key, options[:mailing_list_id], options[:email], delete_user, send_goodbye, send_notify) 
-        rescue XMLRPC::FaultException => e
-          raise MailChimpAPI::DeleteError, e.faultString
-        end   
-      end
-      
-      def chimp_update(options, merge_vars, email_content_type="html", replace_interests=false)
-        begin
-          @client.call("listUpdateMember", @api_key, options[:mailing_list_id], options[:email], merge_vars, email_content_type, replace_interests) 
-        rescue XMLRPC::FaultException => e
-          raise MailChimpAPI::UpdateError, e.faultString
-        end   
-      end
-      
-      # TODO - is there any reason this isn't the same as chimp_all_members?
-      def chimp_read_member(options)
-        begin
-          raise MailChimpAPI::ReadError, "Email can't be nil" if (options[:email].nil?) 
-          @client.call("listMemberInfo", @api_key, options[:mailing_list_id], options[:email])  
-        rescue XMLRPC::FaultException => e
-          raise MailChimpAPI::ReadError, e.faultString
-        end  
-      end
-      
-      def chimp_all_members(options)
-        begin
-          @client.call("listMembers", @api_key, options[:mailing_list_id], options[:status], "", 0, 15000)
-        rescue XMLRPC::FaultException => e
-          raise MailChimpAPI::ReadError, e.faultString
-        end    
-      end
-      
-       def chimp_lists
-          begin
-            @client.call("lists", @api_key)
-          rescue XMLRPC::FaultException => e
-            raise MailChimpAPI::ReadError, e.faultString
-          end    
-        end
-      
-      def get_mailing_list_from_resource(resource)
-        unless @mailing_list_id.nil?
-          mailing_list_id = @mailing_list_id
-        else
-          mailing_list_id = resource.mailing_list_id
-        end
-      end
-     
       def extract_update_options(attributes)
         merge_vars = {} 
         attributes.each do |prop,val|
