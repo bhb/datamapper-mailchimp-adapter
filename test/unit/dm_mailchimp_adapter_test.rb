@@ -49,59 +49,35 @@ class MailchimpAdapterTest < Test::Unit::TestCase
       XMLRPC::Client.any_instance.stubs(:call).with('listMembers', anything, anything, anything, anything, anything, anything).returns([bob,stan])
       XMLRPC::Client.any_instance.expects(:call).with('listMemberInfo', anything, anything, 'bob@test.com').returns(bob)
       XMLRPC::Client.any_instance.expects(:call).with('listMemberInfo', anything, anything, 'stan@test.com').returns(stan)
-      #query = stub_everything(:conditions => [])
       query = DataMapper::Query.new(repository(:default),Subscriber)
-      create_adapter.read_many(query).inspect
-      #Subscriber.all
+      create_adapter.read_many(query).inspect # need to call inspect to force loading. It's lazy by default.
     end
     
   end
 
   testing "#read_one" do
 
-    # test "" do
-#       subscriber = {'email' => 'bob@test.com'}#   #stub_everything(email => 'bob@test.com')
-#       XMLRPC::Client.any_instance.stubs(:call).returns([subscriber])
-# #      XMLRPC::Client.any_instance.stubs(:call).returns([subscriber])
-#       assert_equal subscriber, Subscriber.first
-#     end
-
-   #  test "should call listMembers" do
-#       subscriber = {'email' => 'bob@test.com'}
-#       XMLRPC::Client.any_instance.stubs(:call).returns([subscriber])
-#       XMLRPC::Client.any_instance.stubs(:call).returns([subscriber])
-#       assert_equal subscriber, Subscriber.first
-#     end
-
-  
-
-    test "should handle getting an Array from #read" do
-      subscriber = stub_everything
-      DataMapper::Adapters::MailchimpAdapter.any_instance.stubs(:read).returns([subscriber])
-      assert_equal subscriber, Subscriber.first
-    end
-
-    test "should handle getting a non-Array from #read" do
-      subscriber = stub_everything
-      DataMapper::Adapters::MailchimpAdapter.any_instance.stubs(:read).returns(subscriber)
-      assert_equal subscriber, Subscriber.first
-    end
-    
     test "should call listMembers" do
       XMLRPC::Client.any_instance.expects(:call).with('listMembers', anything, anything, anything, anything, anything, anything).returns([])
       query = stub_everything(:conditions => [])
-      create_adapter.read_one(query)#Subscriber.first
+      create_adapter.read_one(query)
     end
 
-    test "calls #read" do
-      # datamapper class expects :read with query, model, false
-      # call Subscriber.first
+    test "should return single result" do
+      pending
+    end
+
+    test "should return first result if many match" do
+      pending
+    end
+
+    test "should return nil if no results match" do
+      pending
     end
 
   end
   
   testing "#update" do
-    # skip
   end
 
   testing "#delete" do
