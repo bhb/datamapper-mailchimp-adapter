@@ -24,6 +24,7 @@ module DataMapper
       end
 
       def create(resources)
+        #debugger
         created = 0
         if resources.size > 1
           batch = Array.new(resources.size)

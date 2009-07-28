@@ -7,13 +7,20 @@ DataMapper.setup(:default, {
                  })
 
 class MailchimpAdapterTest < Test::Unit::TestCase
-
+  include DataMapper::Adapters
+  
+  def create_adapter(options={})
+    MailchimpAdapter.new(:default,
+                         {:api_key => CONFIG['api_key'],
+                           :mailing_list_id => CONFIG['mailing_list_id']})
+  end
+  
   testing "#initialize" do
     
     test "should raise no exceptions" do
       assert_nothing_raised do
         XMLRPC::Client.stubs(:new2)
-        Subscriber.new
+        MailchimpAdapter.new(:default,{})
       end
     end
 
@@ -23,14 +30,14 @@ class MailchimpAdapterTest < Test::Unit::TestCase
     
     test "should call listSubscribe for single subscriber" do
       XMLRPC::Client.any_instance.expects(:call).with("listSubscribe", anything, anything, 'bob@test.com', anything, anything, anything)
-      Subscriber.create(:email => 'bob@test.com')
+      create_adapter.create([Subscriber.new(:email => 'bob@test.com')])
     end
 
-    test "should call listBatchSubscriber for multiple subscribers" do
-      #      XMLRPC::Client.any_instance.expects(:call).with("listBatchSubscribe", anything, anything, 'bob@test.com', anything, anything, anything)
-      #      Subscriber.create([{:email => 'bob@test.com'},
-      #                         {:email => 'stan@test.com'}])
-    end
+    #test "should call listBatchSubscriber for multiple subscribers" do
+    # XMLRPC::Client.any_instance.expects(:call).with("listBatchSubscribe", anything, anything, 'bob@test.com', anything, anything, anything)
+    #  create_adapter.create([Subscriber.new(:email => 'bob@test.com'),
+    #                         Subscriber.new(:email => 'stan@test.com')])
+    # end
     
   end
 
@@ -50,6 +57,16 @@ class MailchimpAdapterTest < Test::Unit::TestCase
 #       assert_equal subscriber, Subscriber.first
 #     end
 
+   #  test "should call listMembers" do
+#       subscriber = {'email' => 'bob@test.com'}
+#       XMLRPC::Client.any_instance.stubs(:call).returns([subscriber])
+#       XMLRPC::Client.any_instance.stubs(:call).returns([subscriber])
+#       assert_equal subscriber, Subscriber.first
+#     end
+
+    test "should call listMemberInfo for each member" do
+    end
+
     test "should handle getting an Array from #read" do
       subscriber = stub_everything
       DataMapper::Adapters::MailchimpAdapter.any_instance.stubs(:read).returns([subscriber])
@@ -64,7 +81,8 @@ class MailchimpAdapterTest < Test::Unit::TestCase
     
     test "should call listMembers" do
       XMLRPC::Client.any_instance.expects(:call).with('listMembers', anything, anything, anything, anything, anything, anything).returns([])
-      Subscriber.first
+      query = stub_everything(:conditions => [])
+      create_adapter.read_one(query)#Subscriber.first
     end
 
     test "calls #read" do
