@@ -1,6 +1,8 @@
 require 'xmlrpc/client'
 require 'dm-core'
 require 'pp'
+require File.dirname(__FILE__) + '/xml_rpc_connector'
+
 module MailChimpAPI
    class CreateError < StandardError; end
    class ReadError < StandardError; end
@@ -11,13 +13,19 @@ end
 module DataMapper
   module Adapters
     class MailchimpAdapter < AbstractAdapter
-      attr_reader :client, :authorization, :mailing_list_id
       CHIMP_URL = "http://api.mailchimp.com/1.2/" 
+
+      include XmlRpcConnector
+
+      attr_reader :client, :authorization, :mailing_list_id
+
+
       def initialize(name, uri_or_options)
         super(name, uri_or_options)
-        @client = XMLRPC::Client.new2(CHIMP_URL)  
+        # @client = XMLRPC::Client.new2(CHIMP_URL)  
         @mailing_list_id = uri_or_options[:mailing_list_id]
         @api_key = uri_or_options[:api_key]
+        protocol_initializer 
       end
 
       def create(resources)
@@ -89,25 +97,6 @@ module DataMapper
         end
       end
 
-      # TODO change these defaults back
-      #def chimp_subscribe(resource, email_content_type="html", double_optin=true)
-      def chimp_subscribe(resource, email_content_type="html", double_optin=false)
-        begin
-          @client.call("listSubscribe", @api_key, get_mailing_list_from_resource(resource), resource.email, resource.build_mail_merge(), email_content_type, double_optin)
-        rescue XMLRPC::FaultException => e
-          raise MailChimpAPI::CreateError, e.faultString
-        end    
-      end
-      
-      # TODO - this doesn't seem to match the API at all!
-      def chimp_batch_subscribe(resource, email_content_type="html", double_optin=true, update_existing=true, replace_interests=false)
-        begin
-          @client.call("listBatchSubscribe", @api_key, get_mailing_list_from_resource(resource), resource.email, double_optin, update_existing, replace_interests)
-        rescue XMLRPC::FaultException => e
-          raise MailChimpAPI::CreateError, e.faultString
-        end    
-      end
-      
       # TODO - put this back to defaults, but let users change settings
       #def chimp_remove(options, delete_user=false, send_goodbye=true, send_notify=true)
       def chimp_remove(options, delete_user=true, send_goodbye=false, send_notify=false)

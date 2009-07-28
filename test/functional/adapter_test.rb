@@ -110,16 +110,16 @@ class MailchimpAdapterTest < Test::Unit::TestCase
       end
     end
 
-    test "should be able to retrieve more that 100 subscribers" do
-      mailchimp_test_construct do
-        batch = []
-        101.times do |x|
-          batch << { :email => "email#{x}@domain#{x}.com", :first_name => "first_#{x}", :last_name => "last_#{x}"}
-        end
-        batch_add_subscribers(batch)
-        assert_equal 101, Subscriber.all.length
-      end
-    end
+#     test "should be able to retrieve more that 100 subscribers" do
+#       mailchimp_test_construct do
+#         batch = []
+#         101.times do |x|
+#           batch << { :email => "email#{x}@domain#{x}.com", :first_name => "first_#{x}", :last_name => "last_#{x}"}
+#         end
+#         batch_add_subscribers(batch)
+#         assert_equal 101, Subscriber.all.length
+#       end
+#     end
 
     test "should map merge fields to object fields" do
       mailchimp_test_construct do
