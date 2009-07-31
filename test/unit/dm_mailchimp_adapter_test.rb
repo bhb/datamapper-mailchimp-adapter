@@ -85,6 +85,10 @@ class MailchimpAdapterTest < Test::Unit::TestCase
   
   testing "#update" do
 
+    test "should call listUpdateMember" do
+      pending
+    end
+
     test "should return number of resources updated" do
       pending
     end
@@ -97,6 +101,10 @@ class MailchimpAdapterTest < Test::Unit::TestCase
 
   testing "#delete" do
     
+    test "should call 'listUnsubscribe'" do
+      pending
+    end
+
     test "should return number of resources deleted" do
       pending
     end

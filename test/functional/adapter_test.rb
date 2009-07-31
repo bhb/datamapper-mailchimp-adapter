@@ -63,8 +63,8 @@ class MailchimpAdapterTest < Test::Unit::TestCase
 
     test "email should be set" do
       mailchimp_test_construct do
-        subscriber = create_subscriber(:email => 'test@test.com')
-        assert_equal 'test@test.com', subscriber.email
+        subscriber = create_subscriber(:email => 'foo@bar.com')
+        assert_equal 'foo@bar.com', subscriber.email
       end
     end
     

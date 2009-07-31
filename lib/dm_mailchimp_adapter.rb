@@ -51,13 +51,15 @@ module DataMapper
           result
         end
       end
-    
+
+      # TODO - this looks like a bug - shouldn't chimp_update tell how many resources were updated?
       def update(attributes, query)
         updated = 0
         @mailchimp_ami.chimp_update(extract_query_options(query), extract_update_options(attributes))
         updated += 1
       end
       
+      # TODO - this looks like a bug - shouldn't chimp_update tell how many resources were deleted?
       def delete(query)
         deleted = 0
         @mailchimp_api.chimp_remove(extract_query_options(query))
