@@ -84,9 +84,27 @@ class MailchimpAdapterTest < Test::Unit::TestCase
   end
   
   testing "#update" do
+
+    test "should return number of resources updated" do
+      pending
+    end
+
+    test "should update resources" do
+      pending
+    end
+    
   end
 
   testing "#delete" do
+    
+    test "should return number of resources deleted" do
+      pending
+    end
+
+    test "should delete resources" do
+      pending
+    end
+
   end
   
 end
