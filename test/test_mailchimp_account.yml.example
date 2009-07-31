@@ -3,7 +3,18 @@
 # with contents you care about. The tests will
 # delete the contents of the list. 
 #
-#  In fact, it's safe to create an entirely different 
+#  In fact, it's safer to create an entirely different 
 #  account just for testing.
 api_key: abcdef0123456789abcdef0123456789
 mailing_list_id: abcdef0123
+list_name: test
+
+# If there is a bug in the code, running tests could
+# try to send out confirmation emails to all the test
+# email addresses you set up. To safeguard against this,
+# it's best to provide either personal or test email
+# addresses so your account isn't flagged as a spammer
+email_address1: you1@example.com
+email_address2: you2@example.com
+email_address3: you3@example.com
+
