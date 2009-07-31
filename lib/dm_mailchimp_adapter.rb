@@ -26,11 +26,8 @@ module DataMapper
       def create(resources)
         created = 0
         if resources.size > 1
-          batch = Array.new(resources.size)
-          resources.each do |resource|
-            batch << resource.build_mail_merge
-            created += 1
-          end
+          batch = resources.map { |resource| resource.build_mail_merge }
+          created += resources.length
           @mailchimp_api.chimp_batch_subscribe(batch)
         else
           @mailchimp_api.chimp_subscribe(resources.first)

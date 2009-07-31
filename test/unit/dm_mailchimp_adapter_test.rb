@@ -33,11 +33,17 @@ class MailchimpAdapterTest < Test::Unit::TestCase
       create_adapter.create([Subscriber.new(:email => 'bob@test.com')])
     end
 
-    #test "should call listBatchSubscriber for multiple subscribers" do
-    # XMLRPC::Client.any_instance.expects(:call).with("listBatchSubscribe", anything, anything, 'bob@test.com', anything, anything, anything)
-    #  create_adapter.create([Subscriber.new(:email => 'bob@test.com'),
-    #                         Subscriber.new(:email => 'stan@test.com')])
-    # end
+    # Datamapper doesn't currently call #create with multiple resources
+    # but might as an optimization in the future. As a result, I need
+    # to test this by calling it directly (but I can't do a functional
+    # test yet, unfortunatey).
+    test "should call listBatchSubscriber for multiple subscribers" do
+      subscribers = [Subscriber.new(:email => 'bob@test.com'),
+                     Subscriber.new(:email => 'stan@test.com')]
+      batch = subscribers.map {|subscriber| { 'EMAIL' => subscriber.email, 'LNAME' => nil, 'FNAME' => nil } } 
+      XMLRPC::Client.any_instance.expects(:call).with("listBatchSubscribe", anything, anything, batch, anything, anything, anything)
+      create_adapter.create(subscribers)
+    end
     
   end
 

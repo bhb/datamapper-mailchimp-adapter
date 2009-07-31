@@ -30,7 +30,7 @@ class MailchimpAdapterTest < Test::Unit::TestCase
     formatted_batch = []
     batch.each do |subscriber|
       formatted_batch << {
-        'EMAIL' => subscriber[:email],
+        'EMAIL' => subscriber[:email]
       }
     end
     mc_helper.list_batch_subscribe(formatted_batch)
@@ -60,19 +60,6 @@ class MailchimpAdapterTest < Test::Unit::TestCase
         assert_equal [subscriber], Subscriber.all
       end
     end
-
-    # impossible to do from this level right now
-    # make a unit-level test and make a note
-    # test "can create multiple subscribers" do
-#       mailchimp_test_construct do
-#         #bob = {:email => 'bob@test.com'}
-#         #stan = {:email => 'stan@test.com'}
-#         debugger
-#         bob = create_subscriber(:email => 'bob@test.com')
-#         stan = create_subscriber(:email => 'stanb@test.com')
-#         assert_has_contents [bob,stan], Subscriber.all
-#       end
-#     end
 
     test "email should be set" do
       mailchimp_test_construct do

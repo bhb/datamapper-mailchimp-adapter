@@ -18,9 +18,9 @@ class XmlRpcConnector
   end
   
   # TODO - this doesn't seem to match the API at all!
-  def chimp_batch_subscribe(resource, email_content_type="html", double_optin=true, update_existing=true, replace_interests=false)
+  def chimp_batch_subscribe(batch, email_content_type="html", double_optin=true, update_existing=true, replace_interests=false)
     begin
-      @client.call("listBatchSubscribe", @api_key, get_mailing_list_from_resource(resource), resource.email, double_optin, update_existing, replace_interests)
+      @client.call("listBatchSubscribe", @api_key, @mailing_list_id, batch, double_optin, update_existing, replace_interests)
     rescue XMLRPC::FaultException => e
       raise MailChimpAPI::CreateError, e.faultString
     end    
