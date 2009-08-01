@@ -52,7 +52,8 @@ module DataMapper
         end
       end
 
-      # TODO - this looks like a bug - shouldn't chimp_update tell how many resources were updated?
+      # TODO - this looks like a potential bug - shouldn't chimp_update tell how many resources were updated?
+      # Or perhaps this cannot update more than one item at once?
       def update(attributes, query)
         updated = 0
         @mailchimp_ami.chimp_update(extract_query_options(query), extract_update_options(attributes))
