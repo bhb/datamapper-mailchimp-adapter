@@ -7,9 +7,10 @@ DataMapper.setup(:default, {
                    :mailing_list_id => CONFIG['mailing_list_id']
                  })
 
-list_name = CONFIG['list_name']
-email_address1 = CONFIG['email_address1']
-email_address2 = CONFIG['email_address2']
+ListName = CONFIG['list_name']
+EmailAddress1 = CONFIG['email_address1']
+EmailAddress2 = CONFIG['email_address2']
+EmailAddress3 = CONFIG['email_address3']
 
 class MailchimpAdapterTest < Test::Unit::TestCase
 
@@ -41,7 +42,7 @@ class MailchimpAdapterTest < Test::Unit::TestCase
   end
   
   def create_subscriber(options={})
-    Subscriber.create(:email => options.fetch(:email) {email_address1},
+    Subscriber.create(:email => options.fetch(:email) {EmailAddress1},
                       :first_name => options.fetch(:first_name) {'John'},
                       :last_name => options.fetch(:last_name) {'Smith'})
   end
@@ -51,7 +52,7 @@ class MailchimpAdapterTest < Test::Unit::TestCase
     test "new/save should create a subscriber" do
       pending
       #mailchimp_test_construct do
-      #  subscriber = Subscriber.new(:email => email_address1)
+      #  subscriber = Subscriber.new(:email => EmailAddress1)
       #  assert_equal [], Subscriber.all
       #  subscriber.save
       #  assert_equal [subscriber], Subscriber.all
@@ -67,8 +68,8 @@ class MailchimpAdapterTest < Test::Unit::TestCase
 
     test "email should be set" do
       mailchimp_test_construct do
-        subscriber = create_subscriber(:email => email_address2)
-        assert_equal email_address2, subscriber.email
+        subscriber = create_subscriber(:email => EmailAddress2)
+        assert_equal EmailAddress2, subscriber.email
       end
     end
     
@@ -80,11 +81,11 @@ class MailchimpAdapterTest < Test::Unit::TestCase
     end
 
     test "should raise exception if subscriber already exists" do
-      create_subscriber(:email => email_address1)
+      create_subscriber(:email => EmailAddress1)
       error = assert_raises MailChimpAPI::CreateError do
-        create_subscriber(:email => email_address1)
+        create_subscriber(:email => EmailAddress1)
       end
-      assert_equal "#{email_address1} is already subscribed to list #{list_name}", error.message
+      assert_equal "#{EmailAddress1} is already subscribed to list #{ListName}", error.message
     end
     
   end
@@ -108,10 +109,11 @@ class MailchimpAdapterTest < Test::Unit::TestCase
 
     test "should retrieve all subscribers from a list" do
       mailchimp_test_construct do
-        john = create_subscriber(:email => email_address1)
-        jane = create_subscriber(:email => email_address2)
+        john = create_subscriber(:email => EmailAddress1)
+        jane = create_subscriber(:email => EmailAddress2)
         assert_has_contents [jane,john], Subscriber.all
       end
+
     end
 
     # This test takes a long time and is a bit unsafe because it
@@ -144,9 +146,9 @@ class MailchimpAdapterTest < Test::Unit::TestCase
     test "should return all subscribers that matches email" do
       pending
       # mailchimp_test_construct do
-      #         john = create_subscriber(:email => email_address1)
-      #         jane = create_subscriber(:email => email_address2)
-      #         subscribers = Subscriber.all(:email => email_address1)
+      #         john = create_subscriber(:email => EmailAddress1)
+      #         jane = create_subscriber(:email => EmailAddress2)
+      #         subscribers = Subscriber.all(:email => EmailAddress1)
       #         assert_equal 1, subscribers.length
       #       end
     end
@@ -155,11 +157,11 @@ class MailchimpAdapterTest < Test::Unit::TestCase
       pending
       #mailchimp_test_construct do
       #  sam = create_subscriber(:first_name => 'Sam',
-      #                          :email => email_address1)
+      #                          :email => EmailAddress1)
       #  tom = create_subscriber(:first_name => 'Tom',
-      #                          :email => email_address2)
+      #                          :email => EmailAddress2)
       #  samuel = create_subscriber(:first_name => 'Sam',
-      #                             :email => email_address3)
+      #                             :email => EmailAddress3)
       #  subscribers = Subscriber.all(:first_name => 'Sam')
       #  assert_equal 2, subscribers.length
       #end
@@ -186,9 +188,9 @@ class MailchimpAdapterTest < Test::Unit::TestCase
     test "should return first subscriber that matches email" do
       pending
       #mailchimp_test_construct do
-      #  jane = create_subscriber(:email => email_address1)
-      #  john = create_subscriber(:email => email_address2)
-      #  subscriber = Subscriber.first(:email => email_address2)
+      #  jane = create_subscriber(:email => EmailAddress1)
+      #  john = create_subscriber(:email => EmailAddress2)
+      #  subscriber = Subscriber.first(:email => EmailAddress2)
       #  assert_equal john, subscriber
       #end
     end
@@ -196,8 +198,8 @@ class MailchimpAdapterTest < Test::Unit::TestCase
     test "should return first subscriber that matches merge tag (e.g. first name)" do
       pending
       #mailchimp_test_construct do
-      #  tom = create_subscriber(:first_name => 'Tom', :email => email_address1)
-      #  sam = create_subscriber(:first_name => 'Sam', :email => email_address2)
+      #  tom = create_subscriber(:first_name => 'Tom', :email => EmailAddress1)
+      #  sam = create_subscriber(:first_name => 'Sam', :email => EmailAddress2)
       #  subscriber = Subscriber.first(:first_name => 'Sam')
       #  assert_equal sam, subscriber
       #end
@@ -205,10 +207,10 @@ class MailchimpAdapterTest < Test::Unit::TestCase
 
     test "should map merge fields to object fields" do
       mailchimp_test_construct do
-        create_subscriber(:email => email_address1,
+        create_subscriber(:email => EmailAddress1,
                           :first_name => 'Tom',
                           :last_name => 'Smith')
-        tom = Subscriber.first(:email => email_address1)
+        tom = Subscriber.first(:email => EmailAddress1)
         assert_equal 'Tom', tom.first_name
         assert_equal 'Smith', tom.last_name
       end

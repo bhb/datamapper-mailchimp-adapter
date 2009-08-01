@@ -1,3 +1,6 @@
+
+
+
 class XmlRpcConnector
   CHIMP_URL = "http://api.mailchimp.com/1.2/" 
 
