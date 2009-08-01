@@ -42,6 +42,35 @@ class MailchimpAdapterTest < Test::Unit::TestCase
                       :last_name => options.fetch(:last_name) {'Smith'})
   end
 
+  testing "updating a subscriber" do
+
+    test "can change email" do
+      mailchimp_test_construct do
+        john = create_subscriber(:email => EmailAddress1)
+        john.email = EmailAddress2
+        john.save
+        assert_equal EmailAddress2, john.email
+        assert_equal EmailAddress2, Subscriber.first.email
+      end
+    end
+
+    test "can change a merge tag" do
+      mailchimp_test_construct do
+        john = create_subscriber(:first_name => 'John')
+        john.first_name = 'Johnny'
+        john.save
+        assert_equal 'Johnny', john.first_name
+        assert_equal 'Johnny', Subscriber.first.first_name
+      end
+    end
+
+    test "can change a merge tag besides email, first_name, or last_name" do
+      pending
+    end
+
+  end
+
+
   testing "creating a subscriber" do
     
     test "new/save should create a subscriber" do

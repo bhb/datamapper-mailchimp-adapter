@@ -56,7 +56,7 @@ module DataMapper
       # Or perhaps this cannot update more than one item at once?
       def update(attributes, query)
         updated = 0
-        @mailchimp_ami.chimp_update(extract_query_options(query), extract_update_options(attributes))
+        @mailchimp_api.chimp_update(extract_query_options(query), extract_update_options(attributes))
         updated += 1
       end
       
@@ -95,7 +95,8 @@ module DataMapper
       def extract_update_options(attributes)
         merge_vars = {} 
         attributes.each do |prop,val|
-           case prop.name
+           case prop.name.to_s
+             # TODO - what happens if there is a value besides one of these?
              when "email" then merge_vars.merge!("EMAIL" => val)
              when "first_name" then merge_vars.merge!("FNAME" => val)
              when "last_name" then merge_vars.merge!("LNAME" => val)
