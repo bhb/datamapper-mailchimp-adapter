@@ -8,6 +8,11 @@ require File.expand_path(File.join(File.dirname(__FILE__), %w[.. lib dm_mailchim
 
 CONFIG =  YAML::load_file(File.dirname(__FILE__)+'/test_mailchimp_account.yml')
 
+ListName = CONFIG['list_name']
+EmailAddress1 = CONFIG['email_address1']
+EmailAddress2 = CONFIG['email_address2']
+EmailAddress3 = CONFIG['email_address3']
+
 class Subscriber
   include DataMapper::Resource
   

@@ -7,11 +7,6 @@ DataMapper.setup(:default, {
                    :mailing_list_id => CONFIG['mailing_list_id']
                  })
 
-ListName = CONFIG['list_name']
-EmailAddress1 = CONFIG['email_address1']
-EmailAddress2 = CONFIG['email_address2']
-EmailAddress3 = CONFIG['email_address3']
-
 class MailchimpAdapterTest < Test::Unit::TestCase
 
   def delete_all_subscribers(mc_helper)

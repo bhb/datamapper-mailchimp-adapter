@@ -1,11 +1,8 @@
-
-
-
 class XmlRpcConnector
   CHIMP_URL = "http://api.mailchimp.com/1.2/" 
 
-  def initialize(api_key,mailing_list_id)
-    @client = XMLRPC::Client.new2(CHIMP_URL)  
+  def initialize(api_key, mailing_list_id, client = XMLRPC::Client.new2(CHIMP_URL))
+    @client = client
     @api_key = api_key
     @mailing_list_id = mailing_list_id
   end
